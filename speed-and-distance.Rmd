@@ -8,19 +8,45 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-```{r}
-## New plot
-x <- plot(rnorm(100))
-```
 
-## R Markdown
+## Monte Carlo simulation
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Example of a simple Monte Carlo computation of the area of a unit circle following <https://www.youtube.com/watch?v=EaR3C4e600k>.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Consider a **unit circle**. We can build a $2 \times 2$ square to envelope it. The Area of the circle is $\pi/4$. This can be approximated by sampling many points in the square and by computing the fraction of those points also laying within the circle.
 
 ```{r cars}
-summary(cars)
+sampler <- function(N){
+  circle <- 0 
+for(i in 1:N){
+ # cat(paste0(round((i/N)*100,2), "%"), " \r")
+  x <- runif(1, min = -1, max = 1)
+  y <- runif(1, min = -1, max = 1)
+  if(x^2 + y^2 <= 1){
+    circle <- circle + 1
+  }
+}
+results <- c(estimate = circle/N, true =  pi/4)
+abs(diff(results))
+}
+
+sampler(10^5)
+```
+
+We could improve the code as follows:
+
+```{r}
+sampler_A <- function(N){
+  circle <- 0 
+  for(i in 1:N){
+   # cat(paste0(round((i/N)*100,2), "%"), " \r")
+    x <- runif(1, min = -1, max = 1)
+    y <- runif(1, min = -1, max = 1)
+    circle <- circle + (x^2 + y^2 <= 1)*1
+  }
+results <- c(estimate = circle/N, true =  pi/4)
+abs(diff(results))
+}
 ```
 
 ## Including Plots
